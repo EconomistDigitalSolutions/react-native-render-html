@@ -19,7 +19,8 @@ export default class HTML extends PureComponent {
         alterData: PropTypes.func,
         alterChildren: PropTypes.func,
         alterNode: PropTypes.func,
-        html: PropTypes.string,
+        htmlString: PropTypes.string,
+        htmlJson: PropTypes.array,
         uri: PropTypes.string,
         tagsStyles: PropTypes.object,
         classesStyles: PropTypes.object,
@@ -68,32 +69,35 @@ export default class HTML extends PureComponent {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { html, uri, renderers } = this.props;
-
+        const { htmlString, htmlJson, uri, renderers } = this.props;
+        
         this.generateDefaultStyles(nextProps.baseFontStyle);
         if (renderers !== nextProps.renderers) {
             this.renderers = { ...HTMLRenderers, ...(nextProps.renderers || {}) };
         }
-        if (html !== nextProps.html || uri !== nextProps.uri) {
+        if (htmlString !== nextProps.htmlString || uri !== nextProps.uri || htmlJson !== nextProps.htmlJson) {
             // If the source changed, register the new HTML and parse it
             this.registerDOM(nextProps);
         } else {
             // If it didn't, let's just parse the current DOM and re-render the nodes
             // to compute potential style changes
-            this.parseDOM(this.state.dom, nextProps);
+            this.parseDOM(nextProps);
         }
     }
 
-    componentDidUpdate (prevProps, prevState) {
-        if (this.state.dom !== prevState.dom) {
-            this.parseDOM(this.state.dom);
+    componentDidUpdate (prevProps, prevState) {        
+        if (this.state.htmlString !== prevState.htmlString || this.state.htmlJson !== prevState.htmlJson) {
+            this.parseDOM();
         }
     }
+    
 
     async registerDOM (props = this.props, cb) {
-        const { html, uri } = props;
-        if (html) {
-            this.setState({ dom: html, loadingRemoteURL: false, errorLoadingRemoteURL: false });
+        const { htmlString, htmlJson, uri } = props;
+        if (htmlString) {
+            this.setState({ htmlString, loadingRemoteURL: false, errorLoadingRemoteURL: false });
+        } else if (htmlJson){
+            this.setState({ htmlJson, loadingRemoteURL: false, errorLoadingRemoteURL: false }); 
         } else if (props.uri) {
             try {
                 // WIP : This should render a loader and html prop should not be set in state
@@ -101,7 +105,7 @@ export default class HTML extends PureComponent {
                 try {
                     this.setState({ loadingRemoteURL: true, errorLoadingRemoteURL: false });
                     let response = await fetch(uri);
-                    this.setState({ dom: response._bodyText, loadingRemoteURL: false });
+                    this.setState({ htmlString: response._bodyText, loadingRemoteURL: false });
                 } catch (err) {
                     console.warn(err);
                     this.setState({ errorLoadingRemoteURL: true, loadingRemoteURL: false });
@@ -115,27 +119,37 @@ export default class HTML extends PureComponent {
         }
     }
 
-    parseDOM (dom, props = this.props) {
-        const { decodeEntities, debug, onParsed } = this.props;
+    parseDOM (props = this.props) {
+        const { decodeEntities } = props;
+        const { htmlString, htmlJson } = this.state;
+        if (htmlString) {
         const parser = new htmlparser2.Parser(
             new htmlparser2.DomHandler((_err, dom) => {
-                let RNElements = this.mapDOMNodesTORNElements(dom, false, props);
-                if (onParsed) {
-                    const alteredRNElements = onParsed(dom, RNElements);
-                    if (alteredRNElements) {
-                        RNElements = alteredRNElements;
-                    }
-                }
-                this.setState({ RNNodes: this.renderRNElements(RNElements, 'root', 0, props) });
-                if (debug) {
-                    console.log('DOMNodes from htmlparser2', dom);
-                    console.log('RNElements from render-html', RNElements);
-                }
+                this.generateRNElements(dom, props);
             }),
             { decodeEntities: decodeEntities }
         );
-        parser.write(dom);
+        parser.write(htmlString);
         parser.done();
+    } else if (htmlJson) {
+        this.generateRNElements(htmlJson, props);
+        }
+    }
+
+    generateRNElements(dom, props) {
+        const { debug, onParsed } = props;      
+        let RNElements = this.mapDOMNodesTORNElements(dom, false, props);
+            if (onParsed) {
+                const alteredRNElements = onParsed(dom, RNElements);
+                if (alteredRNElements) {
+                    RNElements = alteredRNElements;
+                }
+            }
+            this.setState({ RNNodes: this.renderRNElements(RNElements, 'root', 0, props) });
+            if (debug) {
+                console.log('DOMNodes from htmlparser2', dom);
+                console.log('RNElements from render-html', RNElements);
+            }
     }
 
     generateDefaultStyles (baseFontStyle = this.props.baseFontStyle) {
