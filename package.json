@@ -13,9 +13,9 @@
         "render-html"
     ],
     "dependencies": {
-        "buffer": "4.5.1",
-        "events": "1.1.0",
-        "html-entities": "1.2.0",
+        "buffer": "5.1.0",
+        "events": "2.0.0",
+        "html-entities": "1.2.1",
         "htmlparser2": "3.9.2",
         "stream": "0.0.2"
     },
