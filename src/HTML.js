@@ -19,7 +19,7 @@ import {
 import { generateDefaultBlockStyles, generateDefaultTextStyles } from './HTMLDefaultStyles';
 import htmlparser2 from 'htmlparser2';
 import * as HTMLRenderers from './HTMLRenderers';
-import he from 'he';
+import { AllHtmlEntities } from 'html-entities';
 
 export default class HTML extends PureComponent {
     static propTypes = {
@@ -153,7 +153,7 @@ export default class HTML extends PureComponent {
                 }),
                 { decodeEntities: decodeEntities }
             );
-            this.entitiesDecoded = decodeEntities;
+            this.entitiesDecoded - decodeEntities;
             parser.write(htmlString);
             parser.done();
         } else if (htmlJson) {
@@ -357,7 +357,7 @@ export default class HTML extends PureComponent {
             if (type === 'text') {
                 // Decode HTML entitites if needed
                 if (props.decodeEntities && !this.entitiesDecoded) {
-                    data = he.unescape(data);
+                    data = AllHtmlEntities.decode(data);
                 }
                 if (!strippedData || !strippedData.length) {
                     // This is blank, don't render an useless additional component
