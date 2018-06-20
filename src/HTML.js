@@ -49,7 +49,8 @@ export default class HTML extends PureComponent {
         }),
         emSize: PropTypes.number.isRequired,
         baseFontStyle: PropTypes.object.isRequired,
-        textSelectable: PropTypes.bool
+        textSelectable: PropTypes.bool,
+        allowFontScaling: PropTypes.bool
     };
 
     static defaultProps = {
@@ -62,7 +63,8 @@ export default class HTML extends PureComponent {
         baseFontStyle: { fontSize: 14 },
         tagsStyles: {},
         classesStyles: {},
-        textSelectable: false
+        textSelectable: false,
+        allowFontScaling: true
     };
 
     constructor(props) {
@@ -547,7 +549,16 @@ export default class HTML extends PureComponent {
 
                   const classStyles = _getElementClassStyles(attribs, classesStyles);
                   const textElementStyles = this.filterBaseFontStyles(element, classStyles, props);
-                  const textElement = data ? <Text style={textElementStyles}>{data}</Text> : false;
+                  const textElement = data ? (
+                      <Text
+                          allowFontScaling={this.props.allowFontScaling}
+                          style={textElementStyles}
+                      >
+                          {data}
+                      </Text>
+                  ) : (
+                      false
+                  );
 
                   const style = [
                       !tagsStyles || !tagsStyles[tagName]
@@ -561,7 +572,10 @@ export default class HTML extends PureComponent {
                   ].filter(s => s !== undefined);
 
                   const extraProps = {};
-                  if (Wrapper === Text) extraProps.selectable = this.props.textSelectable;
+                  if (Wrapper === Text) {
+                      extraProps.selectable = this.props.textSelectable;
+                      extraProps.allowFontScaling = this.props.allowFontScaling;
+                  }
                   return (
                       <Wrapper key={key} style={style} {...extraProps}>
                           {textElement}
