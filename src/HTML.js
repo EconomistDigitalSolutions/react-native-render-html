@@ -445,7 +445,7 @@ export default class HTML extends PureComponent {
                     let textChildrenInheritedStyles = {};
                     Object.keys(wrapperStyles).forEach(styleKey => {
                         // Extract text-only styles
-                        if (TextOnlyPropTypes[styleKey]) {
+                        if (TextOnlyPropTypes.indexOf(styleKey) !== -1) {
                             textChildrenInheritedStyles[styleKey] = wrapperStyles[styleKey];
                             delete wrapperStyles[styleKey];
                         }
