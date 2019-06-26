@@ -1,14 +1,11 @@
-import TextStylesPropTypes from 'react-native/Libraries/Text/TextStylePropTypes';
-import ViewStylesPropTypes from 'react-native/Libraries/Components/View/ViewStylePropTypes';
-import ImageStylesPropTypes from 'react-native/Libraries/Image/ImageStylePropTypes';
+// PropTypes have been deprecated since 0.58. This is why these array are now hardcoded. This lets us preserve
+// a style checking at runtime while keeping the module compatible with all react-native versions.
+const ImageStylePropTypes = ['display', 'width', 'height', 'start', 'end', 'top', 'left', 'right', 'bottom', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight', 'margin', 'marginVertical', 'marginHorizontal', 'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 'marginStart', 'marginEnd', 'padding', 'paddingVertical', 'paddingHorizontal', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'paddingStart', 'paddingEnd', 'borderWidth', 'borderTopWidth', 'borderStartWidth', 'borderEndWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'position', 'flexDirection', 'flexWrap', 'justifyContent', 'alignItems', 'alignSelf', 'alignContent', 'overflow', 'flex', 'flexGrow', 'flexShrink', 'flexBasis', 'aspectRatio', 'zIndex', 'direction', 'shadowColor', 'shadowOffset', 'shadowOpacity', 'shadowRadius', 'transform', 'transformMatrix', 'decomposedMatrix', 'scaleX', 'scaleY', 'rotation', 'translateX', 'translateY', 'resizeMode', 'backfaceVisibility', 'backgroundColor', 'borderColor', 'borderRadius', 'tintColor', 'opacity', 'overlayColor', 'borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomLeftRadius', 'borderBottomRightRadius'];
+const ViewStylePropTypes = ['display', 'width', 'height', 'start', 'end', 'top', 'left', 'right', 'bottom', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight', 'margin', 'marginVertical', 'marginHorizontal', 'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 'marginStart', 'marginEnd', 'padding', 'paddingVertical', 'paddingHorizontal', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'paddingStart', 'paddingEnd', 'borderWidth', 'borderTopWidth', 'borderStartWidth', 'borderEndWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'position', 'flexDirection', 'flexWrap', 'justifyContent', 'alignItems', 'alignSelf', 'alignContent', 'overflow', 'flex', 'flexGrow', 'flexShrink', 'flexBasis', 'aspectRatio', 'zIndex', 'direction', 'shadowColor', 'shadowOffset', 'shadowOpacity', 'shadowRadius', 'transform', 'transformMatrix', 'decomposedMatrix', 'scaleX', 'scaleY', 'rotation', 'translateX', 'translateY', 'backfaceVisibility', 'backgroundColor', 'borderColor', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor', 'borderStartColor', 'borderEndColor', 'borderRadius', 'borderTopLeftRadius', 'borderTopRightRadius', 'borderTopStartRadius', 'borderTopEndRadius', 'borderBottomLeftRadius', 'borderBottomRightRadius', 'borderBottomStartRadius', 'borderBottomEndRadius', 'borderStyle', 'opacity', 'elevation'];
+const TextStylePropTypes = ['display', 'width', 'height', 'start', 'end', 'top', 'left', 'right', 'bottom', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight', 'margin', 'marginVertical', 'marginHorizontal', 'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 'marginStart', 'marginEnd', 'padding', 'paddingVertical', 'paddingHorizontal', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'paddingStart', 'paddingEnd', 'borderWidth', 'borderTopWidth', 'borderStartWidth', 'borderEndWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'position', 'flexDirection', 'flexWrap', 'justifyContent', 'alignItems', 'alignSelf', 'alignContent', 'overflow', 'flex', 'flexGrow', 'flexShrink', 'flexBasis', 'aspectRatio', 'zIndex', 'direction', 'shadowColor', 'shadowOffset', 'shadowOpacity', 'shadowRadius', 'transform', 'transformMatrix', 'decomposedMatrix', 'scaleX', 'scaleY', 'rotation', 'translateX', 'translateY', 'backfaceVisibility', 'backgroundColor', 'borderColor', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor', 'borderStartColor', 'borderEndColor', 'borderRadius', 'borderTopLeftRadius', 'borderTopRightRadius', 'borderTopStartRadius', 'borderTopEndRadius', 'borderBottomLeftRadius', 'borderBottomRightRadius', 'borderBottomStartRadius', 'borderBottomEndRadius', 'borderStyle', 'opacity', 'elevation', 'color', 'fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'fontVariant', 'textShadowOffset', 'textShadowRadius', 'textShadowColor', 'letterSpacing', 'lineHeight', 'textAlign', 'textAlignVertical', 'includeFontPadding', 'textDecorationLine', 'textDecorationStyle', 'textDecorationColor', 'textTransform', 'writingDirection']
 
 // Filter prop-types that are only applicable to <Text> and not <View>
-export let TextOnlyPropTypes = {};
-Object.keys(TextStylesPropTypes).forEach((prop) => {
-    if (!ViewStylesPropTypes[prop]) {
-        TextOnlyPropTypes[prop] = TextStylesPropTypes[prop];
-    }
-});
+export const TextOnlyPropTypes = TextStylePropTypes.filter((prop) => ViewStylePropTypes.indexOf(prop) === -1);
 
 // These tags should ALWAYS be mapped to View wrappers
 export const BLOCK_TAGS = ['address', 'article', 'aside', 'footer', 'hgroup', 'nav', 'section', 'blockquote', 'dd',
@@ -20,11 +17,30 @@ export const TEXT_TAGS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'figcaption', 'p',
     'dfn', 'i', 'kbd', 'mark', 'q', 'rt', 's', 'samp', 'small', 'big', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr',
     'del', 'ins', 'blink', 'font', 'em', 'bold', 'br'];
 
+// Text in these tags should not be stripped from line breaks
+export const PREFORMATTED_TAGS = ['pre'];
+
 // These tags can either be mapped to View or Text wrappers, depending solely on their children
 export const MIXED_TAGS = ['a'];
 
 // These text tags shouldn't be associated with their siblings in the associateRawTags method
 export const TEXT_TAGS_IGNORING_ASSOCIATION = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+
+export const ABSOLUTE_FONT_SIZE = {
+    'medium': 14,
+    'xx-small': 8.5,
+    'x-small': 10,
+    'small': 12,
+    'large': 17,
+    'x-large': 20,
+    'xx-large': 24,
+    'smaller': 13.3,
+    'larger': 16,
+    'length': null,
+    'initial': null,
+    'inherit': null,
+    'unset': null
+};
 
 export const IGNORED_TAGS = ['head', 'scripts', 'audio', 'video', 'track', 'embed', 'object', 'param', 'source', 'canvas', 'noscript',
     'caption', 'col', 'colgroup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'button', 'datalist', 'fieldset', 'form',
@@ -39,20 +55,12 @@ export const PERC_SUPPORTED_STYLES = [
     'padding', 'paddingBottom', 'paddingTop', 'paddingLeft', 'paddingRight', 'paddingHorizontal', 'paddingVertical'
 ];
 
-// We have to do some munging here as the objects are wrapped
-const RNTextStylePropTypes = Object.keys(TextStylesPropTypes)
-    .reduce((acc, k) => { acc[k] = TextStylesPropTypes[k]; return acc; }, {});
-const RNViewStylePropTypes = Object.keys(ViewStylesPropTypes)
-    .reduce((acc, k) => { acc[k] = ViewStylesPropTypes[k]; return acc; }, {});
-const RNImageStylePropTypes = Object.keys(ImageStylesPropTypes)
-    .reduce((acc, k) => { acc[k] = ImageStylesPropTypes[k]; return acc; }, {});
-
 export const STYLESETS = Object.freeze({ VIEW: 'view', TEXT: 'text', IMAGE: 'image' });
-
-export const stylePropTypes = {};
-stylePropTypes[STYLESETS.VIEW] = Object.assign({}, RNViewStylePropTypes);
-stylePropTypes[STYLESETS.TEXT] = Object.assign({}, RNViewStylePropTypes, RNTextStylePropTypes);
-stylePropTypes[STYLESETS.IMAGE] = Object.assign({}, RNViewStylePropTypes, RNImageStylePropTypes);
+export const stylePropTypes = {
+    [STYLESETS.VIEW]: ViewStylePropTypes,
+    [STYLESETS.TEXT]: TextStylePropTypes,
+    [STYLESETS.IMAGE]: ImageStylePropTypes
+};
 
 /**
  * Returns an array with the tagname of every parent of a node.
