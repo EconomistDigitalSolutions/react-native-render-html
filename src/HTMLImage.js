@@ -33,6 +33,11 @@ export default class HTMLImage extends PureComponent {
 
     componentDidMount () {
         this.getImageSize();
+        this.mounted = true;
+    }
+
+    componentWillUnmount () {
+        this.mounted = false;
     }
 
     componentWillReceiveProps (nextProps) {
@@ -49,14 +54,24 @@ export default class HTMLImage extends PureComponent {
         if (width) {
             styleWidth = width;
         }
-        style.forEach((styles) => {
-            if (!width && styles['width']) {
-                styleWidth = styles['width'];
+        if (Array.isArray(style)) {
+            style.forEach((styles) => {
+                if (!width && styles['width']) {
+                    styleWidth = styles['width'];
+                }
+                if (!height && styles['height']) {
+                    styleHeight = styles['height'];
+                }
+            });
+        } else {
+            if (!width && style['width']) {
+                styleWidth = style['width'];
             }
-            if (!height && styles['height']) {
-                styleHeight = styles['height'];
+            if (!height && style['height']) {
+                styleHeight = style['height'];
             }
-        });
+        }
+
         return { styleWidth, styleHeight };
     }
 
@@ -65,7 +80,7 @@ export default class HTMLImage extends PureComponent {
         const { styleWidth, styleHeight } = this.getDimensionsFromStyle(style, height, width);
 
         if (styleWidth && styleHeight) {
-            return this.setState({
+            return this.mounted && this.setState({
                 width: typeof styleWidth === 'string' && styleWidth.search('%') !== -1 ? styleWidth : parseInt(styleWidth, 10),
                 height: typeof styleHeight === 'string' && styleHeight.search('%') !== -1 ? styleHeight : parseInt(styleHeight, 10)
             });
@@ -75,14 +90,14 @@ export default class HTMLImage extends PureComponent {
             source.uri,
             (originalWidth, originalHeight) => {
                 if (!imagesMaxWidth) {
-                    return this.setState({ width: originalWidth, height: originalHeight });
+                    return this.mounted && this.setState({ width: originalWidth, height: originalHeight });
                 }
                 const optimalWidth = imagesMaxWidth <= originalWidth ? imagesMaxWidth : originalWidth;
                 const optimalHeight = (optimalWidth * originalHeight) / originalWidth;
-                this.setState({ width: optimalWidth, height: optimalHeight, error: false });
+                this.mounted && this.setState({ width: optimalWidth, height: optimalHeight, error: false });
             },
             () => {
-                this.setState({ error: true });
+                this.mounted && this.setState({ error: true });
             }
         );
     }

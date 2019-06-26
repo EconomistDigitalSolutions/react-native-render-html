@@ -1,7 +1,11 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+<<<<<<< HEAD
+import { View, Text, ViewPropTypes, ActivityIndicator } from 'react-native';
+=======
 import { View, Text, ViewPropTypes, ActivityIndicator, Dimensions } from 'react-native';
 import { cssStringToRNStyle, _getElementClassStyles, cssStringToObject, cssObjectToString, computeTextStyles } from './HTMLStyles';
+>>>>>>> origin/master
 import {
     BLOCK_TAGS,
     TEXT_TAGS,
@@ -9,9 +13,20 @@ import {
     IGNORED_TAGS,
     TEXT_TAGS_IGNORING_ASSOCIATION,
     STYLESETS,
+<<<<<<< HEAD
+    TextOnlyPropTypes
+} from './HTMLUtils';
+import {
+    cssStringToRNStyle,
+    _getElementClassStyles,
+    cssStringToObject,
+    cssObjectToString
+} from './HTMLStyles';
+=======
     TextOnlyPropTypes,
     PREFORMATTED_TAGS
 } from './HTMLUtils';
+>>>>>>> origin/master
 import { generateDefaultBlockStyles, generateDefaultTextStyles } from './HTMLDefaultStyles';
 import htmlparser2 from 'htmlparser2';
 import * as HTMLRenderers from './HTMLRenderers';
@@ -49,9 +64,14 @@ export default class HTML extends PureComponent {
         ptSize: PropTypes.number.isRequired,
         baseFontStyle: PropTypes.object.isRequired,
         textSelectable: PropTypes.bool,
+<<<<<<< HEAD
+        allowFontScaling: PropTypes.bool
+    };
+=======
         renderersProps: PropTypes.object,
         allowFontScaling: PropTypes.bool
     }
+>>>>>>> origin/master
 
     static defaultProps = {
         renderers: HTMLRenderers,
@@ -68,7 +88,11 @@ export default class HTML extends PureComponent {
         classesStyles: {},
         textSelectable: false,
         allowFontScaling: true
+<<<<<<< HEAD
+    };
+=======
     }
+>>>>>>> origin/master
 
     constructor(props) {
         super(props);
@@ -187,6 +211,56 @@ export default class HTML extends PureComponent {
         this.defaultTextStyles = generateDefaultTextStyles(baseFontStyle.fontSize || 14);
     }
 
+<<<<<<< HEAD
+    filterBaseFontStyles(element, classStyles, props = this.props) {
+        const { tagsStyles, baseFontStyle } = props;
+        const { tagName, parentTag, parent, attribs } = element;
+        const styles = Object.keys(baseFontStyle);
+        let appliedStyles = {};
+
+        for (let i = 0; i < styles.length; i++) {
+            const styleAttribute = styles[i];
+            const tagToCheck = tagName === 'rawtext' ? parentTag : tagName;
+            const styleAttributeWithCSSDashes = styleAttribute.replace(/[A-Z]/, match => {
+                return `-${match.toLowerCase()}`;
+            });
+            const overridenFromStyle =
+                attribs &&
+                attribs.style &&
+                attribs.style.search(styleAttributeWithCSSDashes) !== -1;
+            const overridenFromParentStyle =
+                parent &&
+                parent.attribs &&
+                parent.attribs.style &&
+                parent.attribs.style.search(styleAttributeWithCSSDashes) !== -1;
+
+            const overridenFromTagStyle =
+                tagToCheck && tagsStyles[tagToCheck] && tagsStyles[tagToCheck][styleAttribute];
+            const overridenFromParentTagStyle =
+                parentTag && tagsStyles[parentTag] && tagsStyles[parentTag][styleAttribute];
+
+            const overridenFromClassStyles = classStyles && classStyles[styleAttribute];
+            const overridenFromDefaultStyles =
+                this.defaultTextStyles[tagToCheck] &&
+                this.defaultTextStyles[tagToCheck][styleAttribute];
+
+            const notOverriden =
+                !overridenFromStyle &&
+                !overridenFromParentStyle &&
+                !overridenFromTagStyle &&
+                !overridenFromParentTagStyle &&
+                !overridenFromClassStyles &&
+                !overridenFromDefaultStyles;
+
+            if (notOverriden) {
+                appliedStyles[styleAttribute] = baseFontStyle[styleAttribute];
+            }
+        }
+        return appliedStyles;
+    }
+
+=======
+>>>>>>> origin/master
     /**
      * Loop on children and return whether if their parent needs to be a <View>
      * @param {any} children
@@ -225,9 +299,16 @@ export default class HTML extends PureComponent {
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             if (
+<<<<<<< HEAD
+                child.wrapper === 'Text' &&
+                TEXT_TAGS_IGNORING_ASSOCIATION.indexOf(child.tagName) === -1 &&
+                children.length > 1 &&
+                (!child.parent || child.parent.name !== 'p')
+=======
                 (child.wrapper === 'Text' && TEXT_TAGS_IGNORING_ASSOCIATION.indexOf(child.tagName) === -1) &&
                 children.length > 1 &&
                 (!child.parent || TEXT_TAGS_IGNORING_ASSOCIATION.indexOf(child.parent.name) === -1)
+>>>>>>> origin/master
             ) {
                 // Texts outside <p> or not <p> themselves (with siblings)
                 let wrappedTexts = [];
@@ -371,6 +452,28 @@ export default class HTML extends PureComponent {
                 return { wrapper: 'View', children, attribs, parent, tagName: name, parentTag };
             }
         })
+<<<<<<< HEAD
+            .filter(parsedNode => parsedNode !== false && parsedNode !== undefined) // remove useless nodes
+            .map((parsedNode, nodeIndex) => {
+                const { wrapper, children, attribs, tagName } = parsedNode;
+                const firstChild = children && children[0];
+                if (firstChild && children.length === 1) {
+                    // Specific tweaks for wrappers with a single child
+                    if (
+                        (attribs === firstChild.attribs || !firstChild.attribs) &&
+                        firstChild.wrapper === wrapper &&
+                        (tagName === firstChild.tagName || firstChild.tagName === 'rawtext')
+                    ) {
+                        // If the only child of a node is using the same wrapper, merge them into one
+                        return {
+                            ...parsedNode,
+                            attribs: { ...attribs, ...firstChild.attribs },
+                            data: firstChild.data,
+                            children: [],
+                            tagName,
+                            nodeIndex
+                        };
+=======
         .map((parsedNode, nodeIndex) => {
             const { wrapper, attribs, tagName, children } = parsedNode;
             if (wrapper === 'View' && attribs && this.wrapperHasTextChild(children)) {
@@ -389,6 +492,7 @@ export default class HTML extends PureComponent {
                     if (TextOnlyPropTypes.indexOf(styleKey) !== -1) {
                         textChildrenInheritedStyles[styleKey] = wrapperStyles[styleKey];
                         delete wrapperStyles[styleKey];
+>>>>>>> origin/master
                     }
                 }
                 return { ...parsedNode, nodeIndex };
@@ -454,6 +558,105 @@ export default class HTML extends PureComponent {
      * @returns {array}
      * @memberof HTML
      */
+<<<<<<< HEAD
+    renderRNElements(RNElements, parentWrapper = 'root', parentIndex = 0, props = this.props) {
+        const { tagsStyles, classesStyles, emSize, ignoredStyles } = props;
+        return RNElements && RNElements.length
+            ? RNElements.map((element, index) => {
+                  const {
+                      attribs,
+                      data,
+                      tagName,
+                      parentTag,
+                      children,
+                      nodeIndex,
+                      wrapper
+                  } = element;
+                  const Wrapper = wrapper === 'Text' ? Text : View;
+                  const key = `${wrapper}-${parentIndex}-${nodeIndex}-${tagName}-${index}-${parentTag}`;
+                  const convertedCSSStyles =
+                      attribs && attribs.style
+                          ? cssStringToRNStyle(
+                                attribs.style,
+                                Wrapper === Text ? STYLESETS.TEXT : STYLESETS.VIEW, // proper prop-types validation
+                                { parentTag: tagName, emSize, ignoredStyles }
+                            )
+                          : {};
+
+                  const childElements =
+                      children && children.length
+                          ? children.map((child, childIndex) =>
+                                this.renderRNElements([child], wrapper, index, props)
+                            )
+                          : false;
+
+                  if (this.renderers[tagName]) {
+                      const customRenderer =
+                          typeof this.renderers[tagName] === 'function'
+                              ? this.renderers[tagName]
+                              : this.renderers[tagName].renderer;
+
+                      if (!customRenderer || typeof customRenderer !== 'function') {
+                          console.warn(
+                              `Custom renderer for ${tagName} supplied incorrectly. Please check out the docs.`
+                          );
+                          return undefined;
+                      }
+                      // If a custom renderer is available for this tag
+                      return customRenderer(attribs, childElements, convertedCSSStyles, {
+                          ...props,
+                          parentWrapper: wrapper,
+                          parentTag,
+                          nodeIndex,
+                          parentIndex,
+                          key,
+                          data,
+                          rawChildren: children
+                      });
+                  }
+
+                  const classStyles = _getElementClassStyles(attribs, classesStyles);
+                  const textElementStyles = this.filterBaseFontStyles(element, classStyles, props);
+                  const textElement = data ? (
+                      <Text
+                          allowFontScaling={this.props.allowFontScaling}
+                          style={textElementStyles}
+                      >
+                          {data}
+                      </Text>
+                  ) : (
+                      false
+                  );
+
+                  const style = [
+                      !tagsStyles || !tagsStyles[tagName]
+                          ? (Wrapper === Text ? this.defaultTextStyles : this.defaultBlockStyles)[
+                                tagName
+                            ]
+                          : undefined,
+                      tagsStyles ? tagsStyles[tagName] : undefined,
+                      classStyles,
+                      convertedCSSStyles
+                  ].filter(s => s !== undefined);
+
+                  const extraProps = {};
+                  if (Wrapper === Text) {
+                      extraProps.selectable = this.props.textSelectable;
+                      extraProps.allowFontScaling = this.props.allowFontScaling;
+                  }
+                  return (
+                      <Wrapper key={key} style={style} {...extraProps}>
+                          {textElement}
+                          {childElements}
+                      </Wrapper>
+                  );
+              })
+            : false;
+    }
+
+    render() {
+        const { customWrapper, remoteLoadingView, remoteErrorView } = this.props;
+=======
     renderRNElements (RNElements, parentWrapper = 'root', parentIndex = 0, props = this.props) {
         const {
             allowFontScaling,
@@ -556,6 +759,7 @@ export default class HTML extends PureComponent {
 
     render () {
         const { allowFontScaling, customWrapper, remoteLoadingView, remoteErrorView } = this.props;
+>>>>>>> origin/master
         const { RNNodes, loadingRemoteURL, errorLoadingRemoteURL } = this.state;
         if (!RNNodes && !loadingRemoteURL && !errorLoadingRemoteURL) {
             return null;
@@ -568,6 +772,17 @@ export default class HTML extends PureComponent {
                 </View>
             );
         } else if (errorLoadingRemoteURL) {
+<<<<<<< HEAD
+            return remoteErrorView ? (
+                remoteErrorView(this.props, this.state)
+            ) : (
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={{ fontStyle: 'italic', fontSize: 16 }}>
+                        Could not load {this.props.uri}
+                    </Text>
+                </View>
+            );
+=======
             return remoteErrorView ?
                 remoteErrorView(this.props, this.state) :
                 (
@@ -575,6 +790,7 @@ export default class HTML extends PureComponent {
                         <Text allowFontScaling={allowFontScaling} style={{ fontStyle: 'italic', fontSize: 16 }}>Could not load { this.props.uri }</Text>
                     </View>
                 );
+>>>>>>> origin/master
         }
 
         return customWrapper ? (
