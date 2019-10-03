@@ -50,7 +50,8 @@ export default class HTML extends PureComponent {
         emSize: PropTypes.number.isRequired,
         baseFontStyle: PropTypes.object.isRequired,
         textSelectable: PropTypes.bool,
-        allowFontScaling: PropTypes.bool
+        allowFontScaling: PropTypes.bool,
+        textBreakStrategy: PropTypes.string
     };
 
     static defaultProps = {
@@ -64,7 +65,8 @@ export default class HTML extends PureComponent {
         tagsStyles: {},
         classesStyles: {},
         textSelectable: false,
-        allowFontScaling: true
+        allowFontScaling: true,
+        textBreakStrategy: 'simple'
     };
 
     constructor(props) {
@@ -575,6 +577,7 @@ export default class HTML extends PureComponent {
                   if (Wrapper === Text) {
                       extraProps.selectable = this.props.textSelectable;
                       extraProps.allowFontScaling = this.props.allowFontScaling;
+                      extraProps.textBreakStrategy = this.props.textBreakStrategy;
                   }
                   return (
                       <Wrapper key={key} style={style} {...extraProps}>
